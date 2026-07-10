@@ -1,15 +1,27 @@
 # CSS Shimmer Pulse Modal
 
-A hardware-accelerated, pure CSS dialog component featuring a smooth top shimmer line animation paired with a full-window deep pulse glow effect. Engineered specifically to meet the high aesthetic standards of modern interactive digital creative portfolios.
+## 1. What does this do?
+This submission delivers a pure CSS shimmer pulse modal for a sci-fi console UI. It uses a dark, neon-accented layout with a futuristic panel treatment and a smooth shimmer animation that activates on hover and keyboard focus.
 
-## Features
-- **Zero JavaScript Overhead:** Runs natively on the browser window layer using the CSS `:target` tracking mechanism.
-- **Dual Animation System:** Synchronized infinite shimmer gradient flow paired with subtle scale and shadow glow pulsation.
-- **Full Control Variables:** Centralizes animation timing profiles directly inside CSS variables.
-- **Deep Layout Accessibility:** Provides structural semantic elements like close-by-backdrop anchors and native overlay scaling controls.
+## 2. How is it used?
+Open the launch button in the demo to reveal the modal overlay. The modal is built with semantic HTML and CSS-only interactions, so it works without JavaScript.
 
-## Control Variable Parameters
-Modify these values within `:root` of `style.css` to change the performance values:
-- `--modal-speed`: Modal fade-in and scale-up transition length (default: `0.4s`)
-- `--shimmer-duration`: Cycle interval rate for the shimmer slide and scale pulsing loop (default: `2.5s`)
-- `--pulse-scale`: Maximum transform sizing parameter triggered during maximum animation expansion point (default: `1.015`)
+```html
+<a class="launch-btn" href="#console-modal">Open console access</a>
+```
+
+## 3. Why is it useful?
+It provides a polished, accessible modal pattern for dashboards and console-style interfaces while keeping the implementation lightweight and customizable.
+
+### Customization variables
+- `--em-duration`
+- `--em-delay`
+- `--em-easing`
+- `--em-scale`
+- `--em-shimmer-color`
+- `--em-glow-color`
+
+## Files
+- `demo.html` — working example with the console-inspired layout
+- `style.css` — reusable component and animation styles
+- `README.md` — usage and customization notes
