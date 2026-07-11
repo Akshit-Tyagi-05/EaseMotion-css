@@ -1,5 +1,6 @@
 import { spawnSync, execSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -12,27 +13,52 @@ const bundlePath = path.join(rootDir, "easemotion.min.css");
 // This prevents unnecessary bundle conflicts for example/sandbox PRs.
 if (process.env.GITHUB_ACTIONS === "true") {
   try {
-    const baseBranch = process.env.GITHUB_BASE_REF || "main";
-    execSync(`git fetch origin ${baseBranch} --depth=1`, { stdio: "ignore" });
-    
-    const changedFiles = execSync(`git diff --name-only origin/${baseBranch}`, { encoding: "utf8" })
-      .split("\n")
-      .map(f => f.trim())
-      .filter(Boolean);
-      
-    const affectsBundle = changedFiles.some(file => 
-      file === "easemotion.css" ||
-      file.startsWith("core/") ||
-      file.startsWith("components/") ||
-      file.startsWith("easemotion/")
+    let diffCommand;
+
+    if (process.env.GITHUB_BASE_REF) {
+      const baseBranch = process.env.GITHUB_BASE_REF;
+
+      execSync(`git fetch origin ${baseBranch} --depth=1`, {
+        stdio: "ignore",
+      });
+
+      diffCommand = `git diff --name-only origin/${baseBranch}`;
+    } else if (process.env.GITHUB_EVENT_PATH) {
+      const event = JSON.parse(
+        readFileSync(process.env.GITHUB_EVENT_PATH, "utf8")
+      );
+
+      if (event.before && event.after) {
+        diffCommand = `git diff --name-only ${event.before} ${event.after}`;
+      }
+    }
+
+    const changedFiles = diffCommand
+      ? execSync(diffCommand, { encoding: "utf8" })
+          .split("\n")
+          .map(file => file.trim())
+          .filter(Boolean)
+      : [];
+
+    const affectsBundle = changedFiles.some(
+      file =>
+        file === "easemotion.css" ||
+        file.startsWith("core/") ||
+        file.startsWith("components/") ||
+        file.startsWith("easemotion/")
     );
 
     if (!affectsBundle) {
-      console.log("No core, component, or entrypoint files modified. Skipping bundle validation.");
+      console.log(
+        "No core, component, or entrypoint files modified. Skipping bundle validation."
+      );
       process.exit(0);
     }
   } catch (err) {
-    console.warn("Could not determine changed files from git diff, running full validation:", err.message);
+    console.warn(
+      "Could not determine changed files from git diff, running full validation:",
+      err.message
+    );
   }
 }
 
